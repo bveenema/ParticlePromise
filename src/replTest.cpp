@@ -37,7 +37,6 @@ class FuncStore{
 
 int main ()
 {
-    // aClass a();
     aClass a;
     FuncStore f;
 
