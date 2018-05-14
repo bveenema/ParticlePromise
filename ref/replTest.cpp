@@ -47,3 +47,47 @@ int main ()
     f.callFunction(1,3);
 
 }
+
+
+// ---------------------------------------------------
+#include <iostream>
+#include <string.h>
+#include <functional>
+
+// class Promise{
+// public:
+//   Promise(uint8_t maxTopicLength){
+//     responseTopic = new char[maxTopicLength];
+//   }
+//   const char* responseTopic;
+// };
+
+class Foo{
+  Foo();
+
+  void Bar(uint8_t test ,uint8_t teste){
+
+  }
+};
+
+template<uint8_t N>
+struct Promise {
+  char responseTopic[N];
+  std::function<void(const char*, const char*)> successFunc;
+};
+
+void* myArrayOfClasses;
+
+const uint8_t maxTopicLength = 20;
+
+int main() {
+  Foo foo();
+
+  Promise<maxTopicLength> * myArrayOfClasses = new Promise<maxTopicLength>[5];
+
+  strcpy(myArrayOfClasses[2].responseTopic, "test");
+
+  //myArrayOfClasses[2].responseTopic = "test";
+
+  std::cout << "Empty Container Position: " << myArrayOfClasses[2].responseTopic << "\n";
+}
