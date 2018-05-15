@@ -10,13 +10,13 @@
 #include "Particle.h"
 #include <functional>
 
-
+template <size_t BUFFERSIZE = 5, size_t MAXTOPICLENGTH = 20>
 class ParticlePromise{
 public:
   /**
    * Constructor: Intializes PromiseContainer and sets up Particle.subscribe()
    */
-  ParticlePromise(const uint8_t, const uint8_t);
+  ParticlePromise();
 
   /**
    * setTimeout: Ovverride the default timeout time (5 seconds). Unit: milliseconds
@@ -32,45 +32,45 @@ public:
   ParticlePromise& create(void (*sendWebhookFunc)(void), const char* responseTopic, uint32_t timeout = 0);
 
 
-  // ParticlePromise& then(void (*successFunc)(const char*, const char*)){
-  //   if(lastPromise >= 0){
-  //     PromiseContainer[lastPromise].successFunc = successFunc;
-  //   }
-  //   return *this;
-  // }
-  //
-  // ParticlePromise& then(void (*successFunc)(const char*, const char*), void (*errorFunc)(const char*, const char*)){
-  //   if(lastPromise >= 0){
-  //     PromiseContainer[lastPromise].successFunc = successFunc;
-  //     PromiseContainer[lastPromise].errorFunc = errorFunc;
-  //   }
-  //   return *this;
-  // }
-  //
-  // ParticlePromise& error(void (*errorFunc)(const char*, const char*)){
-  //   if(lastPromise >= 0){
-  //     PromiseContainer[lastPromise].successFunc = errorFunc;
-  //   }
-  //   return *this;
-  // }
-  //
-  // ParticlePromise& timeout(void (*timeoutFunc)(void), uint32_t timeout = 0){
-  //   if(lastPromise >= 0){
-  //     if(timeout != 0){
-  //       PromiseContainer[lastPromise].timeoutTime = millis() + timeout;
-  //     }
-  //     PromiseContainer[lastPromise].timeoutFunc = timeoutFunc;
-  //   }
-  //   return *this;
-  // }
-  //
-  // bool finally(void (*finalFunc)(void)){
-  //   if(lastPromise >= 0){
-  //     PromiseContainer[lastPromise].finalFunc = finalFunc;
-  //     return true;
-  //   }
-  //   return false;
-  // }
+  ParticlePromise& then(void (*successFunc)(const char*, const char*)){
+    if(lastPromise >= 0){
+      PromiseContainer[lastPromise].successFunc = successFunc;
+    }
+    return *this;
+  }
+
+  ParticlePromise& then(void (*successFunc)(const char*, const char*), void (*errorFunc)(const char*, const char*)){
+    if(lastPromise >= 0){
+      PromiseContainer[lastPromise].successFunc = successFunc;
+      PromiseContainer[lastPromise].errorFunc = errorFunc;
+    }
+    return *this;
+  }
+
+  ParticlePromise& error(void (*errorFunc)(const char*, const char*)){
+    if(lastPromise >= 0){
+      PromiseContainer[lastPromise].successFunc = errorFunc;
+    }
+    return *this;
+  }
+
+  ParticlePromise& timeout(void (*timeoutFunc)(void), uint32_t timeout = 0){
+    if(lastPromise >= 0){
+      if(timeout != 0){
+        PromiseContainer[lastPromise].timeoutTime = millis() + timeout;
+      }
+      PromiseContainer[lastPromise].timeoutFunc = timeoutFunc;
+    }
+    return *this;
+  }
+
+  bool finally(void (*finalFunc)(void)){
+    if(lastPromise >= 0){
+      PromiseContainer[lastPromise].finalFunc = finalFunc;
+      return true;
+    }
+    return false;
+  }
 
   /**
    * process: checks for expired promises
@@ -82,10 +82,9 @@ private:
   uint8_t maxTopicLength = 0;
   uint32_t defaultTimeout = 5000; // default timeout time
 
-  template<uint8_t L>
   struct Promise{
     bool inUse;
-    char responseTopic[L];
+    char responseTopic[MAXTOPICLENGTH];
     uint32_t timeoutTime;
     std::function<void(const char*, const char*)> successFunc;
     std::function<void(const char*, const char*)> errorFunc;
@@ -93,7 +92,7 @@ private:
     std::function<void(void)> finalFunc;
   };
 
-  void* PromiseContainer;
+  Promise PromiseContainer[BUFFERSIZE];
 
   int8_t lastPromise = -1;
 
