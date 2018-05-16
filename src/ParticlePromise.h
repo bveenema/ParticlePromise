@@ -29,9 +29,13 @@ public:
 class ParticlePromise{
 public:
    ParticlePromise(const uint8_t _containerSize = 5, const uint8_t _maxTopicLength = 20){
-     PromiseContainer = new P_Promise[_containerSize]{_maxTopicLength};
+     PromiseContainer.reserve(_containerSize);
+     for(int i=0; i<_containerSize; i++){
+       PromiseContainer[i] = new P_Promise(_maxTopicLength);
+       PromiseContainer[i].inUse = false;
+     }
    }
 
 private:
-  P_Promise* PromiseContainer;
+  std::vector<P_Promise> PromiseContainer;
 };
