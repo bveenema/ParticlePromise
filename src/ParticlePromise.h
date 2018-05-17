@@ -1,15 +1,19 @@
 #pragma once
 
-// #include <iostream>
-// #include <string.h>
+#include <iostream>
+#include <string.h>
+#include <vector>
 
 
 /* ParticlePromise library by Ben Veenema
  */
 
 
-#include "Particle.h"
+// #include "Particle.h"
 #include <functional>
+#include <algorithm>
+// #include <min>
+// #include <max>
 
 class P_Promise{
 public:
@@ -28,14 +32,40 @@ public:
 
 class ParticlePromise{
 public:
-   ParticlePromise(const uint8_t _containerSize = 5, const uint8_t _maxTopicLength = 20){
+   ParticlePromise(uint8_t _containerSize = 5, uint8_t _maxTopicLength = 20){
+     if(_maxTopicLength < 4) _maxTopicLength = 4;
      PromiseContainer.reserve(_containerSize);
      for(int i=0; i<_containerSize; i++){
-       PromiseContainer[i] = new P_Promise(_maxTopicLength);
+       using namespace std::placeholders;
+       PromiseContainer[i] = P_Promise(_maxTopicLength);
        PromiseContainer[i].inUse = false;
+       strcpy(PromiseContainer[i].responseTopic,"null");
+      // PromiseContainer[i].successFunc = std::bind(defaultFuncA, this, _1, _2);
+      // PromiseContainer[i].errorFunc = std::bind(defaultFuncA, this, _1, _2);
+      // PromiseContainer[i].timeoutFunc = std::bind(defaultFuncB, this);
+      // PromiseContainer[i].finalFunc = std::bind(defaultFuncB, this);
      }
+     maxTopicLength = _maxTopicLength;
+     containerSize = _containerSize;
    }
 
 private:
+  unsigned int maxTopicLength;
+  unsigned int containerSize;
   std::vector<P_Promise> PromiseContainer;
+
+  template <typename T>
+  T clip(const T& n, const T& lower, const T& upper){
+    return std::max(lower, std::min(n, upper));
+  }
+
+  static void defaultFuncA(const char* doesnt, const char* matter){
+    //Serial.printlnf("Function not assigned!");
+    std::cout << "Hello World!\n";
+  }
+
+  static void defaultFuncB(void){
+    //Serial.printlnf("Function not assigned!");
+    std::cout << "Hello World!\n";
+  }
 };
