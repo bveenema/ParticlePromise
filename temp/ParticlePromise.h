@@ -10,7 +10,6 @@
 #include "Particle.h"
 #include <functional>
 
-template <size_t BUFFERSIZE = 5, size_t MAXTOPICLENGTH = 20>
 class ParticlePromise{
 public:
   /**
