@@ -24,9 +24,9 @@ ParticlePromise<{bufferSize}, {maxTopicLength}> promise;  // Creates a buffer fo
 void promise.setTimeout(int); // Sets the default timeout for response, if not set, default timeout is 5 seconds.
 
 void promise.create(*sendWebhookFunction, "myResponseTopic", *successFunction, {*errorFunction}, {*timeoutFunction}, {int timeout}, {*finalFunction});
-auto index = promise.create(*sendWebhookFunction, "myResonseTopic");
+auto index = promise.create(*sendWebhookFunction, "myResonseTopic", {int timeout});
                 index.then(*successFunction);
-                index.catch(*errorFunction);
+                index.error(*errorFunction);
                 index.timeout(*timeoutFunction, {int timeout});
                 index.finally(*finalFunction);
 

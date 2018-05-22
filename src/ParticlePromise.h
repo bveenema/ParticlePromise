@@ -2,23 +2,20 @@
 
 #include <iostream>
 #include <string.h>
-#include <vector>
 
 
 /* ParticlePromise library by Ben Veenema
  */
 
 
-// #include "Particle.h"
+#include "Particle.h"
 #include <functional>
-#include <algorithm>
-// #include <min>
-// #include <max>
+#include <vector>
 
 class P_Promise{
 public:
-  P_Promise(uint8_t charLen = 20){
-    responseTopic = new char[charLen];
+  P_Promise(unsigned int charLen){
+    responseTopic = new char[charLen+1];
   }
   bool inUse;
   char* responseTopic;
@@ -32,40 +29,44 @@ public:
 
 class ParticlePromise{
 public:
-   ParticlePromise(uint8_t _containerSize = 5, uint8_t _maxTopicLength = 20){
-     if(_maxTopicLength < 4) _maxTopicLength = 4;
-     PromiseContainer.reserve(_containerSize);
-     for(int i=0; i<_containerSize; i++){
-       using namespace std::placeholders;
-       PromiseContainer[i] = P_Promise(_maxTopicLength);
-       PromiseContainer[i].inUse = false;
-       strcpy(PromiseContainer[i].responseTopic,"null");
-      // PromiseContainer[i].successFunc = std::bind(defaultFuncA, this, _1, _2);
-      // PromiseContainer[i].errorFunc = std::bind(defaultFuncA, this, _1, _2);
-      // PromiseContainer[i].timeoutFunc = std::bind(defaultFuncB, this);
-      // PromiseContainer[i].finalFunc = std::bind(defaultFuncB, this);
-     }
-     maxTopicLength = _maxTopicLength;
-     containerSize = _containerSize;
-   }
+  ParticlePromise(int _containerSize = 5, int _maxTopicLength = 20);
+
+  ParticlePromise& create(void (*sendWebhookFunc)(void), const char* responseTopic, uint32_t timeout = 0);
+
+  ParticlePromise& then(void (*successFunc)(const char*, const char*));
+  ParticlePromise& then(void (*successFunc)(const char*, const char*), void (*errorFunc)(const char*, const char*));
+
+  ParticlePromise& error(void (*errorFunc)(const char*, const char*));
+
+  ParticlePromise& timeout(void (*timeoutFunc)(void), uint32_t timeout = 0);
+
+  bool finally(void (*finalFunc)(void));
+
+  void printBuffer(){
+    for(int i=0; i<containerSize; i++){
+      Serial.printlnf("PromiseContainer %u", i);
+      Serial.printlnf("\tinUse: %u", PromiseContainer[i].inUse);
+      Serial.printlnf("\tresponseTopic: %s", PromiseContainer[i].responseTopic);
+      Serial.printlnf("\ttimeoutTime: %u", PromiseContainer[i].timeoutTime);
+    }
+  }
 
 private:
   unsigned int maxTopicLength;
   unsigned int containerSize;
   std::vector<P_Promise> PromiseContainer;
+  unsigned int defaultTimeout = 5000;
+  unsigned int lastPromise = -1;
 
-  template <typename T>
-  T clip(const T& n, const T& lower, const T& upper){
-    return std::max(lower, std::min(n, upper));
-  }
+  void responseHandler(const char *event, const char *data);
+
+  int8_t findPromiseByTopic(const char* event);
 
   static void defaultFuncA(const char* doesnt, const char* matter){
-    //Serial.printlnf("Function not assigned!");
-    std::cout << "Hello World!\n";
+    Serial.printlnf("Function not assigned!");
   }
 
   static void defaultFuncB(void){
-    //Serial.printlnf("Function not assigned!");
-    std::cout << "Hello World!\n";
+    Serial.printlnf("Function not assigned!");
   }
 };
