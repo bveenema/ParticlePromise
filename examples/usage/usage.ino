@@ -18,7 +18,7 @@ void setup() {
   promise.create(webhookFunc, "Testhook")
     .then(successFunc);
 
-  auto& p1 = promise.create(webhookFunc, "p3-response");
+  auto& p1 = promise.create(webhookFunc, "p1-response");
   if(p1.valid) p1.then(successFunc).timeout(timeoutFunc);
 
   promise.printBuffer();
