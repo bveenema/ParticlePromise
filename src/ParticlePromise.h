@@ -101,10 +101,8 @@ private:
   int findPromiseByTopic(const char* event);
 
   static void defaultFuncA(const char* doesnt, const char* matter){
-    Serial.printlnf("Function not assigned!");
   }
 
   static void defaultFuncB(void){
-    Serial.printlnf("Function not assigned!");
   }
 };
