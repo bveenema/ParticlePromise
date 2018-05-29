@@ -9,51 +9,9 @@
 
 
 #include "Particle.h"
+#include "Prom.h"
 #include <functional>
 #include <vector>
-
-class P_Promise{
-  friend class ParticlePromise;
-public:
-  P_Promise(unsigned int charLen){
-    responseTopic = new char[charLen+1];
-  }
-  P_Promise& then(void (*_successFunc)(const char*, const char*)){
-    successFunc = _successFunc;
-    return *this;
-  }
-  P_Promise& then(void (*_successFunc)(const char*, const char*), void (*_errorFunc)(const char*, const char*)){
-    this->then(_successFunc);
-    this->error(_errorFunc);
-    return *this;
-  }
-  P_Promise& error(void (*_errorFunc)(const char*, const char*)){
-    errorFunc = _errorFunc;
-    return *this;
-  }
-  P_Promise& timeout(void (*_timeoutFunc)(void), uint32_t timeout = 0){
-    if(timeout != 0){
-      timeoutTime = millis() + timeout;
-    }
-    timeoutFunc = _timeoutFunc;
-    return *this;
-  }
-  void finally(void (*_finalFunc)(void)){
-    finalFunc = _finalFunc;
-  }
-
-  bool valid;
-
-private:
-  bool inUse;
-  char* responseTopic;
-  unsigned int timeoutTime;
-  std::function<void(const char*, const char*)> successFunc;
-  std::function<void(const char*, const char*)> errorFunc;
-  std::function<void(void)> timeoutFunc;
-  std::function<void(void)> finalFunc;
-};
-
 
 class ParticlePromise{
 public:
@@ -78,7 +36,7 @@ public:
    *          supplied, the default will be used.  Returns a reference to the
    *          promise object
    */
-  P_Promise& create(void (*sendWebhookFunc)(void), const char* responseTopic, unsigned int timeout = 0);
+  Prom& create(void (*sendWebhookFunc)(void), const char* responseTopic, unsigned int timeout = 0);
 
   void process(void);
 
@@ -104,7 +62,7 @@ public:
 private:
   unsigned int maxTopicLength;
   unsigned int containerSize;
-  std::vector<P_Promise> PromiseContainer;
+  std::vector<Prom> PromiseContainer;
   unsigned int defaultTimeout = 5000;
 
   void responseHandler(const char *event, const char *data);

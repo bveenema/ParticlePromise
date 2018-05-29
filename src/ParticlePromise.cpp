@@ -8,7 +8,7 @@ ParticlePromise::ParticlePromise(int _containerSize, int _maxTopicLength){
   // Initialize PromiseContainer - Create extra container with value: valid = false;
   PromiseContainer.reserve(containerSize+1);
   for(int i=0; i<containerSize+1; i++){
-    PromiseContainer[i] = P_Promise(maxTopicLength);
+    PromiseContainer[i] = Prom(maxTopicLength);
     PromiseContainer[i].valid = true;
     PromiseContainer[i].inUse = false;
     strcpy(PromiseContainer[i].responseTopic,"null");
@@ -31,7 +31,7 @@ void ParticlePromise::setTimeout(uint32_t newTimeout){
   defaultTimeout = newTimeout;
 }
 
-P_Promise& ParticlePromise::create(void (*sendWebhookFunc)(void), const char* responseTopic, unsigned int timeout){
+Prom& ParticlePromise::create(void (*sendWebhookFunc)(void), const char* responseTopic, unsigned int timeout){
     // find an empty position in the container
   unsigned int containerPosition = 0;
   for(containerPosition; containerPosition<containerSize+1; containerPosition++){
