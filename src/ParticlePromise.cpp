@@ -10,54 +10,38 @@ ParticlePromise::ParticlePromise(int _containerSize, int _maxTopicLength){
   for(int i=0; i<containerSize+1; i++){
     PromiseContainer[i] = Prom(maxTopicLength);
     PromiseContainer[i].valid = true;
-    PromiseContainer[i].inUse = false;
-    strcpy(PromiseContainer[i].responseTopic,"null");
-    PromiseContainer[i].successFunc = this->defaultFuncA;
-    PromiseContainer[i].errorFunc = this->defaultFuncA;
-    PromiseContainer[i].timeoutFunc = this->defaultFuncB;
-    PromiseContainer[i].finalFunc = this->defaultFuncB;
+    this->resetSlot(i);
   }
   PromiseContainer[containerSize].valid = false;
 
-  // Setup Particle.subscribe() handler
   this->enable();
 }
 
-/**
- * setTimeout: Ovverride the default timeout time (5 seconds). Unit: milliseconds
- */
 void ParticlePromise::setTimeout(uint32_t newTimeout){
   if(newTimeout > 60000) return; // prevent timeouts longer than 60 seconds
   defaultTimeout = newTimeout;
 }
 
-Prom& ParticlePromise::create(void (*sendWebhookFunc)(void), const char* responseTopic, unsigned int timeout){
-    // find an empty position in the container
-  unsigned int containerPosition = 0;
-  for(containerPosition; containerPosition<containerSize+1; containerPosition++){
-    if(PromiseContainer[containerPosition].inUse == false) break;
-  }
-  if(containerPosition >= containerSize){
-    // return invalid promise (ie PromiseContainer[].valid == false)
-    return PromiseContainer[containerSize];
-  }
+void ParticlePromise::setTimeoutTime(unsigned int containerPosition, unsigned int timeout){
+  if(timeout == 0) timeout = defaultTimeout;
+  PromiseContainer[containerPosition].timeoutTime = millis() + timeout;
+}
 
-  // Update PromiseContainer with new promise
-  PromiseContainer[containerPosition].inUse = true;
+void ParticlePromise::resetSlot(unsigned int containerPosition, const char* responseTopic, bool inUse){
+  PromiseContainer[containerPosition].inUse = inUse;
   strcpy(PromiseContainer[containerPosition].responseTopic, responseTopic);
   PromiseContainer[containerPosition].successFunc = this->defaultFuncA;
   PromiseContainer[containerPosition].errorFunc = this->defaultFuncA;
   PromiseContainer[containerPosition].timeoutFunc = this->defaultFuncB;
   PromiseContainer[containerPosition].finalFunc = this->defaultFuncB;
+}
 
-  // call sendWebhookFunc
-  sendWebhookFunc();
-
-  // calculate the timeout Time
-  if(timeout == 0) timeout = defaultTimeout;
-  PromiseContainer[containerPosition].timeoutTime = millis() + timeout;
-
-  return PromiseContainer[containerPosition];
+unsigned int ParticlePromise::findEmptySlot(void){
+  unsigned int containerPosition = 0;
+  for(containerPosition; containerPosition<containerSize+1; containerPosition++){
+    if(PromiseContainer[containerPosition].inUse == false) break;
+  }
+  return containerPosition;
 }
 
 void ParticlePromise::enable(void){

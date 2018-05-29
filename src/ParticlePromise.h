@@ -36,7 +36,29 @@ public:
    *          supplied, the default will be used.  Returns a reference to the
    *          promise object
    */
-  Prom& create(void (*sendWebhookFunc)(void), const char* responseTopic, unsigned int timeout = 0);
+  Prom& create(void (*sendWebhookFunc)(void), const char* responseTopic, unsigned int timeout = 0){
+    unsigned int containerPosition = this->findEmptySlot();
+    // return invalid promise (ie PromiseContainer[].valid == false)
+    if(containerPosition >= containerSize) return PromiseContainer[containerSize];
+
+    this->resetSlot(containerPosition, responseTopic, true);
+    sendWebhookFunc();
+    this->setTimeoutTime(containerPosition, timeout);
+    return PromiseContainer[containerPosition];
+  }
+
+  template <typename T>
+  Prom& create(void (T::*sendWebhookFunc)(void), T *instance, const char* responseTopic, unsigned int timeout = 0){
+    unsigned int containerPosition = this->findEmptySlot();
+    // return invalid promise (ie PromiseContainer[].valid == false)
+    if(containerPosition >= containerSize) return PromiseContainer[containerSize];
+
+    this->resetSlot(containerPosition, responseTopic, true);
+    auto fp = std::bind(sendWebhookFunc,instance);
+    fp();
+    this->setTimeoutTime(containerPosition, timeout);
+    return PromiseContainer[containerPosition];
+  }
 
   void process(void);
 
@@ -66,8 +88,10 @@ private:
   unsigned int defaultTimeout = 5000;
 
   void responseHandler(const char *event, const char *data);
-
   int findPromiseByTopic(const char* event);
+  unsigned int findEmptySlot(void);
+  void setTimeoutTime(unsigned int containerPosition, unsigned int timeout);
+  void resetSlot(unsigned int containerPosition, const char* responseTopic = "null", bool inUse = false);
 
   static void defaultFuncA(const char* doesnt, const char* matter){
   }
