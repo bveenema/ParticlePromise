@@ -8,7 +8,7 @@ Webhook must be formatted as:
   Error Response Topic:
     promise-response/error/{webhookName}
 
-Software Timer vs .updaate()?
+Software Timer vs .process()?
 */
 
 
@@ -24,10 +24,12 @@ ParticlePromise<{bufferSize}, {maxTopicLength}> promise;  // Creates a buffer fo
 void promise.setTimeout(int); // Sets the default timeout for response, if not set, default timeout is 5 seconds.
 
 void promise.create(*sendWebhookFunction, "myResponseTopic", *successFunction, {*errorFunction}, {*timeoutFunction}, {int timeout}, {*finalFunction});
-auto index = promise.create(*sendWebhookFunction, "myResonseTopic", {int timeout});
+auto& index = promise.create(*sendWebhookFunction, "myResonseTopic", {int timeout});
                 index.then(*successFunction);
                 index.error(*errorFunction);
                 index.timeout(*timeoutFunction, {int timeout});
                 index.finally(*finalFunction);
 
 promise.reEnable(); // Re-creates Particle.subscribe() in case of a previous Particle.unsubscribe() call
+
+promise.process(); // Checks for timeouts
