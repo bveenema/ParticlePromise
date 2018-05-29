@@ -1,7 +1,7 @@
 #pragma once
 
-// #include <iostream>
-// #include <string.h>
+#include <iostream>
+#include <string.h>
 
 
 /* ParticlePromise library by Ben Veenema
@@ -80,6 +80,8 @@ public:
    */
   P_Promise& create(void (*sendWebhookFunc)(void), const char* responseTopic, unsigned int timeout = 0);
 
+  void process(void);
+
   void printBuffer(){
     for(int i=0; i<containerSize+1; i++){
       Serial.printlnf("PromiseContainer %u", i);
@@ -88,6 +90,15 @@ public:
       Serial.printlnf("\tresponseTopic: %s", PromiseContainer[i].responseTopic);
       Serial.printlnf("\ttimeoutTime: %u", PromiseContainer[i].timeoutTime);
     }
+  }
+
+  void test(const char* event, const char* data = "null", bool isError = false){
+    char eventBuffer[1024];
+    if(isError) strcpy(eventBuffer, "promise-response/error/");
+    else strcpy(eventBuffer, "promise-response/success/");
+    strcat(eventBuffer, event);
+
+    this->responseHandler(eventBuffer, data);
   }
 
 private:

@@ -67,6 +67,17 @@ void ParticlePromise::enable(void){
   Particle.subscribe(System.deviceID() + "/promise-response", &ParticlePromise::responseHandler, this, MY_DEVICES);
 }
 
+void ParticlePromise::process(void){
+  unsigned int currentTime = millis();
+  for(int i=0; i<containerSize; i++){
+    if(PromiseContainer[i].inUse && PromiseContainer[i].timeoutTime < currentTime){
+      PromiseContainer[i].timeoutFunc();
+      PromiseContainer[i].finalFunc();
+      PromiseContainer[i].inUse = false;
+    }
+  }
+}
+
 void ParticlePromise::responseHandler(const char *event, const char *data) {
     int promiseID = findPromiseByTopic(event);
     if(promiseID >= 0){
