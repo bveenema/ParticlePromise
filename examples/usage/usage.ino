@@ -20,10 +20,8 @@ void setup() {
 
   auto& p1 = promise.create(webhookFunc, "p1-response");
   if(p1.valid) p1.then(successFunc).timeout(timeoutFunc);
-
-  promise.printBuffer();
 }
 
 void loop() {
-
+  promise.process();
 }
