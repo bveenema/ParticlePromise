@@ -45,13 +45,10 @@ Prom& ParticlePromise::create(void (*sendWebhookFunc)(void), const char* respons
   // Update PromiseContainer with new promise
   PromiseContainer[containerPosition].inUse = true;
   strcpy(PromiseContainer[containerPosition].responseTopic, responseTopic);
-  {
-    using namespace std::placeholders;
-    PromiseContainer[containerPosition].successFunc = this->defaultFuncA;
-    PromiseContainer[containerPosition].errorFunc = this->defaultFuncA;
-    PromiseContainer[containerPosition].timeoutFunc = this->defaultFuncB;
-    PromiseContainer[containerPosition].finalFunc = this->defaultFuncB;
-  }
+  PromiseContainer[containerPosition].successFunc = this->defaultFuncA;
+  PromiseContainer[containerPosition].errorFunc = this->defaultFuncA;
+  PromiseContainer[containerPosition].timeoutFunc = this->defaultFuncB;
+  PromiseContainer[containerPosition].finalFunc = this->defaultFuncB;
 
   // call sendWebhookFunc
   sendWebhookFunc();
