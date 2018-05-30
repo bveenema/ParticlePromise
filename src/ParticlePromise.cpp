@@ -60,17 +60,17 @@ void ParticlePromise::process(void){
 }
 
 void ParticlePromise::responseHandler(const char *event, const char *data) {
-    int promiseID = findPromiseByTopic(event);
-    if(promiseID >= 0){
-      if(strstr(event, "success")){
-        PromiseContainer[promiseID].successFunc(event, data);
-      } else if(strstr(event, "error")){
-        PromiseContainer[promiseID].errorFunc(event, data);
-      }
-      PromiseContainer[promiseID].finalFunc();
-      PromiseContainer[promiseID].inUse = false;
+  int promiseID = findPromiseByTopic(event);
+  if(promiseID >= 0){
+    if(strstr(event, "success")){
+      PromiseContainer[promiseID].successFunc(event, data);
+    } else if(strstr(event, "error")){
+      PromiseContainer[promiseID].errorFunc(event, data);
     }
+    PromiseContainer[promiseID].finalFunc();
+    PromiseContainer[promiseID].inUse = false;
   }
+}
 
 int ParticlePromise::findPromiseByTopic(const char* event){
   int containerPosition = 0;
