@@ -66,7 +66,7 @@ public:
   //   for(int i=0; i<containerSize+1; i++){
   //     Serial.printlnf("PromiseContainer %u", i);
   //     Serial.printlnf("\tvalid: %u", PromiseContainer[i].valid);
-  //     Serial.printlnf("\tinUse: %u", PromiseContainer[i].inUse);
+  //     Serial.printlnf("\tpending: %u", PromiseContainer[i].pending);
   //     Serial.printlnf("\tresponseTopic: %s", PromiseContainer[i].responseTopic);
   //     Serial.printlnf("\ttimeoutTime: %u", PromiseContainer[i].timeoutTime);
   //   }
@@ -91,7 +91,7 @@ private:
   int findPromiseByTopic(const char* event);
   unsigned int findEmptySlot(void);
   void setTimeoutTime(unsigned int containerPosition, unsigned int timeout);
-  void resetSlot(unsigned int containerPosition, const char* responseTopic = "null", bool inUse = false);
+  void resetSlot(unsigned int containerPosition, const char* responseTopic = "null", bool pending = false);
 
   static void defaultFuncA(const char* doesnt, const char* matter){
   }

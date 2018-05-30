@@ -75,10 +75,16 @@ public:
     return *this;
   }
 
+  bool getStatus(){
+    return this->pending;
+  }
+
   bool valid;
 
+
 private:
-  bool inUse;
+
+  bool pending;
   char* responseTopic;
   unsigned int timeoutTime;
   std::function<void(const char*, const char*)> successFunc;

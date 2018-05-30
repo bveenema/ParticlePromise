@@ -27,8 +27,8 @@ void ParticlePromise::setTimeoutTime(unsigned int containerPosition, unsigned in
   PromiseContainer[containerPosition].timeoutTime = millis() + timeout;
 }
 
-void ParticlePromise::resetSlot(unsigned int containerPosition, const char* responseTopic, bool inUse){
-  PromiseContainer[containerPosition].inUse = inUse;
+void ParticlePromise::resetSlot(unsigned int containerPosition, const char* responseTopic, bool pending){
+  PromiseContainer[containerPosition].pending = pending;
   strcpy(PromiseContainer[containerPosition].responseTopic, responseTopic);
   PromiseContainer[containerPosition].successFunc = this->defaultFuncA;
   PromiseContainer[containerPosition].errorFunc = this->defaultFuncA;
@@ -39,7 +39,7 @@ void ParticlePromise::resetSlot(unsigned int containerPosition, const char* resp
 unsigned int ParticlePromise::findEmptySlot(void){
   unsigned int containerPosition = 0;
   for(containerPosition; containerPosition<containerSize+1; containerPosition++){
-    if(PromiseContainer[containerPosition].inUse == false) break;
+    if(PromiseContainer[containerPosition].pending == false) break;
   }
   return containerPosition;
 }
@@ -51,24 +51,24 @@ void ParticlePromise::enable(void){
 void ParticlePromise::process(void){
   unsigned int currentTime = millis();
   for(int i=0; i<containerSize; i++){
-    if(PromiseContainer[i].inUse && PromiseContainer[i].timeoutTime < currentTime){
+    if(PromiseContainer[i].pending && PromiseContainer[i].timeoutTime < currentTime){
       PromiseContainer[i].timeoutFunc();
       PromiseContainer[i].finalFunc();
-      PromiseContainer[i].inUse = false;
+      PromiseContainer[i].pending = false;
     }
   }
 }
 
 void ParticlePromise::responseHandler(const char *event, const char *data) {
   int promiseID = findPromiseByTopic(event);
-  if(promiseID >= 0){
+  if(promiseID >= 0 && PromiseContainer[promiseID].pending){
     if(strstr(event, "success")){
       PromiseContainer[promiseID].successFunc(event, data);
     } else if(strstr(event, "error")){
       PromiseContainer[promiseID].errorFunc(event, data);
     }
     PromiseContainer[promiseID].finalFunc();
-    PromiseContainer[promiseID].inUse = false;
+    PromiseContainer[promiseID].pending = false;
   }
 }
 
