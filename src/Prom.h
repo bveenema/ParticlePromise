@@ -23,6 +23,15 @@ public:
   Prom& then(void (T::*_successFunc)(const char*, const char*), T *instance){
     using namespace std::placeholders;
     successFunc = std::bind(_successFunc, instance, _1, _2);
+    return *this;
+  }
+
+  template <typename T>
+  Prom& then(void (T::*_successFunc)(const char*, const char*), void (T::*_errorFunc)(const char*, const char*), T *instance){
+    using namespace std::placeholders;
+    successFunc = std::bind(_successFunc, instance, _1, _2);
+    errorFunc = std::bind(_errorFunc, instance, _1, _2);
+    return *this;
   }
 
   // .error() methods
@@ -31,18 +40,39 @@ public:
     return *this;
   }
 
+  template <typename T>
+  Prom& error(void (T::*_errorFunc)(const char*, const char*), T *instance){
+    using namespace std::placeholders;
+    errorFunc = std::bind(_errorFunc, instance, _1, _2);
+    return *this;
+  }
+
   // .timeout() methods
-  Prom& timeout(void (*_timeoutFunc)(void), uint32_t timeout = 0){
-    if(timeout != 0){
-      timeoutTime = millis() + timeout;
-    }
+  Prom& timeout(void (*_timeoutFunc)(void), unsigned int timeout = 0){
+    setTimeoutTime(timeout);
     timeoutFunc = _timeoutFunc;
     return *this;
   }
 
+  template <typename T>
+  Prom& timeout(void (T::*_timeoutFunc)(void), T *instance, unsigned int timeout = 0){
+    setTimeoutTime(timeout);
+    using namespace std::placeholders;
+    timeoutFunc = std::bind(_timeoutFunc, instance);
+    return *this;
+  }
+
   // .finally() methods
-  void finally(void (*_finalFunc)(void)){
+  Prom& finally(void (*_finalFunc)(void)){
     finalFunc = _finalFunc;
+    return *this;
+  }
+
+  template <typename T>
+  Prom& finally(void (T::*_finalFunc)(void), T *instance){
+    using namespace std::placeholders;
+    finalFunc = std::bind(_finalFunc, instance);
+    return *this;
   }
 
   bool valid;
@@ -55,4 +85,10 @@ private:
   std::function<void(const char*, const char*)> errorFunc;
   std::function<void(void)> timeoutFunc;
   std::function<void(void)> finalFunc;
+
+  void setTimeoutTime(unsigned int timeout){
+    if(timeout != 0){
+      timeoutTime = millis() + timeout;
+    }
+  }
 };
