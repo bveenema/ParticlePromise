@@ -79,11 +79,14 @@ public:
     return this->pending;
   }
 
-  bool valid;
+  bool isValid(){
+    return this->valid;
+  };
 
 
 private:
 
+  bool valid;
   bool pending;
   char* responseTopic;
   unsigned int timeoutTime;
