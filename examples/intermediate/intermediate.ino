@@ -28,9 +28,9 @@ void setup() {
 
   waitForPromiseToTimeout(5000); // Allows time for the promise to timeout
 
-  // Promise with combined success and error function setting                              
-  promise.create(sendReques, "test")
-          .then(successFunc,errorFunc)  // tells the promise to call successFunc() on success or errorFunc() on error
+  // Promise with combined success and error function setting
+  promise.create(sendRequest, "test")
+          .then(successFunc,errorFunc);  // tells the promise to call successFunc() on success or errorFunc() on error
 }
 
 void loop() {
@@ -58,6 +58,21 @@ void successFunc(const char* event, const char* data){
 //      will be called on error response from the API request.
 void errorFunc(const char* event, const char* data){
   Serial.printlnf("Error Response: %s", data);
+}
+
+// the timeout function (timeoutFunc() in this example) must return void and accept
+//      no arguments.  This is the function that will be called on if there is no
+//      response from the API before the timeout
+void timeoutFunc(){
+  Serial.printlnf("API Request Timed Out!");
+}
+
+// the final function (finalFunc() in this example) must return void and accept
+//      no arguments.  This is the function that will be called  after any
+//      resolution of the promise (success, error or timeout).  The corresponding
+//      success, error or timeout function will be called first (if it exists)
+void finalFunc(){
+  Serial.printlnf("Promise Resolved");
 }
 
 
