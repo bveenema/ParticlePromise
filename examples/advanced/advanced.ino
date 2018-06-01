@@ -14,6 +14,7 @@
 //    that can be handled at one time or increase the maximum responseTopic length
 //    EXAMPLE: (NOTE: in practice, multiple ParticlePromise object should not be
 //              created)
+
 // ParticlePromise promise;
 // ParticlePromise promise(3); // create PromiseContainer that can handle 3 promises at a time
 ParticlePromise promise(5,60); // create PromiseContainer that can handle responseTopics of 60 characters
@@ -37,7 +38,7 @@ void setup() {
 
   // **** TOO MANY PROMISES ****
   //    In order to limit the amount of heap memory used by ParticlePromise, a
-  //    A PromiseContainer is created at construction that contains pointers to a
+  //    PromiseContainer is created at construction that contains pointers to a
   //    fixed number of Promise (Prom) objects.  If the user code attempts to create
   //    more than the fixed number of promises before they can resolve, ParticlePromise
   //    returns a dummy Promise object.  This dummy object can be tested for by
@@ -59,7 +60,7 @@ void setup() {
   waitForPromiseToTimeout(5000); // Resolve all promises
 
   // **** TESTING FOR RESOLUTION ****
-  //    The returned Promise object can be tested for resolutions by calling
+  //    The returned Promise object can be tested for resolution by calling
   //    .getStatus(). This is useful for delaying main program execution or calling
   //    a seperate loop() while the waiting for the Promise to resolve.  It should
   //    not be used in place of .finally()
