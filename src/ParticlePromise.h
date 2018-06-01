@@ -36,7 +36,7 @@ public:
    *          supplied, the default will be used.  Returns a reference to the
    *          promise object
    */
-  Prom& create(void (*sendWebhookFunc)(void), const char* responseTopic, unsigned int timeout = 0){
+  Prom& create(std::function<void(void)> sendWebhookFunc, const char* responseTopic, unsigned int timeout = 0){
     unsigned int containerPosition = this->findEmptySlot();
     // return invalid promise (ie PromiseContainer[].valid == false)
     if(containerPosition >= containerSize) return PromiseContainer[containerSize];

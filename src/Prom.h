@@ -9,13 +9,14 @@ public:
   }
 
   // .then() methods
-  Prom& then(void (*_successFunc)(const char*, const char*)){
+  Prom& then(std::function<void(const char*, const char*)> _successFunc){
+      successFunc = _successFunc;
+      return *this;
+    }
+  Prom& then(std::function<void(const char*, const char*)> _successFunc,
+             std::function<void(const char*, const char*)> _errorFunc){
     successFunc = _successFunc;
-    return *this;
-  }
-  Prom& then(void (*_successFunc)(const char*, const char*), void (*_errorFunc)(const char*, const char*)){
-    this->then(_successFunc);
-    this->error(_errorFunc);
+    errorFunc = _errorFunc;
     return *this;
   }
 
@@ -35,7 +36,7 @@ public:
   }
 
   // .error() methods
-  Prom& error(void (*_errorFunc)(const char*, const char*)){
+  Prom& error(std::function<void(const char*, const char*)> _errorFunc){
     errorFunc = _errorFunc;
     return *this;
   }
@@ -48,7 +49,7 @@ public:
   }
 
   // .timeout() methods
-  Prom& timeout(void (*_timeoutFunc)(void), unsigned int timeout = 0){
+  Prom& timeout(std::function<void(void)> _timeoutFunc, unsigned int timeout = 0){
     setTimeoutTime(timeout);
     timeoutFunc = _timeoutFunc;
     return *this;
@@ -63,7 +64,7 @@ public:
   }
 
   // .finally() methods
-  Prom& finally(void (*_finalFunc)(void)){
+  Prom& finally(std::function<void(void)> _finalFunc){
     finalFunc = _finalFunc;
     return *this;
   }
