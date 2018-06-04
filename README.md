@@ -125,7 +125,7 @@ The examples make use an open API called [JSONplaceholder](https://jsonplacehold
 
 2. There is a file in the root of the ParticlePromise directory called "exampleWebhook.json".  Enter "particle webhook create exampleWebhook.json" in the command line and press enter.  The command line should return with "Successfully created webhook"
 
-![CLI Webhook Example](readmeAssets/CLIWebhook.JPG)
+   ![CLI Webhook Example](readmeAssets/CLIWebhook.JPG)
 
 ## Documentation
 
