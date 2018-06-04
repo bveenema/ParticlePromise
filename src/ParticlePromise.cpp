@@ -13,8 +13,6 @@ ParticlePromise::ParticlePromise(int _containerSize, int _maxTopicLength){
     this->resetSlot(i);
   }
   PromiseContainer[containerSize].valid = false;
-
-  this->enable();
 }
 
 void ParticlePromise::setTimeout(uint32_t newTimeout){
