@@ -1,0 +1,10 @@
+{
+    "event": "TestParticlePromise",
+    "responseTopic": "{{{PARTICLE_DEVICE_ID}}}/promise-response/success/test",
+    "errorResponseTopic": "{{{PARTICLE_DEVICE_ID}}}/promise-response/error/test",
+    "url": "https://jsonplaceholder.typicode.com/{{param}}",
+    "requestType": "GET",
+    "noDefaults": false,
+    "rejectUnauthorized": true,
+    "responseTemplate": "{{title}}"
+}

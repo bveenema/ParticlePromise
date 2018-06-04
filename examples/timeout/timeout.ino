@@ -1,4 +1,6 @@
-// Examples using custom timeouts for ParticlePromise library
+// Examples using custom timeouts for ParticlePromise library - NOTE: this
+//  example requires a very specific webhook to function properly.  Please see
+//  the README for more info.
 
 #include "ParticlePromise.h"
 

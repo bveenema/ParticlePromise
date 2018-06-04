@@ -19,9 +19,12 @@ promise.create([]{
 ```
 This syntax may look odd if you're unfamiliar with Javascript callbacks but it's a convenient way to keep all of your code in one place and make it easier to reason about.
 
+This syntax of this library may be strange to many users.  There are many, full compiling examples that help to guide you through the its use.  The recommended order is basic->intermediate->timeout->inlineFunctions->advanced->classMemberFunctions. The examples require a specific webhook to exist on the devices Particle Account.  There is a guide for creating this webhook in [Webhook Setup](#creating-example-webhook)
+
 ### Table of Contents
 1. [Usage](#usage)
 2. [Webhook Setup](#webhook-setup)
+   * [Creating Example Webhook](#creating-example-webhook)
 3. [Documentation](#documentation)
    * [Constructor](#constructor)
    * [enable()](#enable)
@@ -90,6 +93,37 @@ and your error Response Topic must be of the format:
 ```
 
 Savvy users will recognize that the inclusion of `{{{PARTICLE_DEVICE_ID}}}` means your API response cannot go to multiple devices.  In most cases this is likely the perfect setup, but this may not work for all users.
+
+### Creating Example Webhook
+In order to successfully run the examples, you will need to create a specific webhook on the same Particle account the device is connected registered to. You can do this via the Particle Console or through Particle CLI.
+
+The examples make use an open API called [JSONplaceholder](https://jsonplaceholder.typicode.com/) that requires no API key or login.
+
+###### Particle Console Guide
+1. Login to your Particle Account on a web browser and go to [console.particle.io/integrations](https://console.particle.io/integrations). Click on "New Integration" then "Webhook"
+![New Integration](readmeAssets/NewIntegration.JPG)
+![Webhook](readmeAssets/NewWebhook.JPG)
+
+2. Give your webhook the following:
+     Event Name: TestParticlePromise
+     URL: https://jsonplaceholder.typicode.com/{{param}}
+     Request Type: GET
+     Request Format: Query Parameters
+     Device: Any
+   ![Webhook Basic Parameters](readmeAssets/WebhookBasicParameters.JPG)
+
+3. Click on "Advanced Settings", skip everything and scroll down to "Webhook Responses". Give your webhook the following settings:
+     Response Topic: {{{PARTICLE_DEVICE_ID}}}/promise-response/success/test
+     Error Response Topic: {{{PARTICLE_DEVICE_ID}}}/promise-response/error/test
+     Response Template: {{title}}
+   ![Webhook Responses](WebhookResponses.JPG)
+
+4. Click on "Save" at the bottom and you'll be taken to the "View Integration" page.  You can TEST your webhook here to make sure it's working properly.
+
+###### Particle CLI Guide
+1. Open a command window and make login to the Particle account your device is connected to.
+
+2. There is a file in the root of the ParticlePromise directory called "exampleWebhook.json".  Enter "particle webhook create exampleWebhook.json" in the command line and press enter.  The command line should return with "Successfully created webhook"
 
 ## Documentation
 

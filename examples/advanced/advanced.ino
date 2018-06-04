@@ -1,4 +1,5 @@
-// Advanced usage for ParticlePromise library
+// Advanced usage for ParticlePromise library - NOTE: this example requires a very
+//  specific webhook to function properly.  Please see the README for more info.
 
 #include "ParticlePromise.h"
 
