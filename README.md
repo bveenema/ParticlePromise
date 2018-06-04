@@ -19,6 +19,23 @@ promise.create([]{
 ```
 This syntax may look odd if you're unfamiliar with Javascript callbacks but it's a convenient way to keep all of your code in one place and make it easier to reason about.
 
+### Table of Contents
+1. [Usage](#usage)
+2. [Webhook Setup](#webhook-setup)
+3. [Documentation](#documentation)
+  * [Constructor](#constructor)
+  * [enable()](#enable)
+  * [setTimeout()](#set-timeout)
+  * [process()](#process)
+  * [create()](#create)
+  * [then()](#then-(prom))
+  * [error()](#error-(prom))
+  * [timeout()](#timeout-(prom))
+  * [finally()](#finally-(prom))
+  * [getStatus()](#get-status-(prom))
+  * [isValid()](#is-valid-(prom))
+4. [License](#license)
+
 ## Usage
 
 Using ParticlePromise can be as simple as
@@ -62,7 +79,7 @@ After any of these completions of the Promise (on-success, on-error, timeout), P
 
 You can supply all or none of the on-success, on-error, timeout and final functions (or anywhere in between).  If a function is not supplied, ParticlePromise will simply not call anything when the API responds.
 
-## Webhook setup
+## Webhook Setup
 ParticlePromise requires you to setup your webhook response topics in a specific manner. Your Response Topic must be of the format:
 ```
 {{{PARTICLE_DEVICE_ID}}}/promise-response/success/{myResonseTopic}
