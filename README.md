@@ -28,12 +28,12 @@ This syntax may look odd if you're unfamiliar with Javascript callbacks but it's
    * [setTimeout()](#set-timeout)
    * [process()](#process)
    * [create()](#create)
-   * [then()](#then-(prom))
-   * [error()](#error-(prom))
-   * [timeout()](#timeout-(prom))
-   * [finally()](#finally-(prom))
-   * [getStatus()](#get-status-(prom))
-   * [isValid()](#is-valid-(prom))
+   * [then()](#then-prom)
+   * [error()](#error-prom)
+   * [timeout()](#timeout-prom)
+   * [finally()](#finally-prom)
+   * [getStatus()](#get-status-prom)
+   * [isValid()](#is-valid-prom)
 4. [License](#license)
 
 ## Usage
