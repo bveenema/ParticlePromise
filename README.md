@@ -87,13 +87,13 @@ ParticlePromise promise(5,60); // 5 Promises, 60 char Response Topic - ~968 byte
 
 ##### Enable
 ------
-Enable must be called prior to [.create()]. Sets up the API response handler.  Uses 1 of 4 Particle.subscribe() slots available to user code
+Enable must be called prior to [.create()]. Enable sets up the API response handler and uses 1 of 4 Particle.subscribe() slots available to user code.
 ``` cpp
 promise.enable();
 ```
 ##### Set Timeout
 ------
-Sets a new default timeout that will be used for all subsequent Promises (does not effect current, in-process) Promises.  Default is 5 seconds.
+Sets a new default timeout that will be used for all subsequent Promises (does not effect current, in-process Promises).  Default is 5 seconds.
 ``` cpp
 promise.setTimeout(10000); // Update default timeout to 10 seconds (unit: milliseconds)
 ```
@@ -111,7 +111,7 @@ Creates a new Promise. Must be passed a function that calls the API/Webhook (ie 
 
 The function that calls the API/Webhook (sendWebhookFunc) must return void and accept no arguments in addition to calling `Particle.publish()`
 
-Can additionally be passed a timeout parameter that specifies a custom timeout for the individual Promise
+Can optionally be passed a timeout parameter that specifies a custom timeout for the individual Promise
 
 ``` cpp
 // SYNTAX (Arguments in brackets "{}" are optional)
@@ -134,7 +134,7 @@ NOTE: Returns a reference to a Promise (PROM) object that can either be ignored 
 ------
 Specifies the function to call on successful response from the API.  Can additionally be passed an error function to be called on-error.
 
-Both success and error functions must return void and accept 2x const char* arguments (same as [Particle.subscribe] handler)
+Both success and error functions must return void and accept 2x `const char*` arguments (same as [Particle.subscribe] handler)
 ``` cpp
 // SYNTAX (Arguments in brackets "{}" are optional)
 Prom& then(std::function successFunc, {std::function errorFunc});
@@ -145,20 +145,23 @@ ___.then(onSuccessFunction);
 ___.then(onSuccessFunction, onErrorFunction);
 ___.then(&MyClass::onSuccessFunc, &MyObject);// or this instead of &MyObject
 ___.then(&MyClass::onSuccessFunc, &MyClass::onErrorFunc, &MyObject);// or this instead of &MyObject
+
+// in-line(lambda) examples
 ___.then([](const char* event, const char* data){
   //SUCCESS FUNCTION BODY
-}); // in-line(lambda) example
+});
+
 ___.then([](const char* event, const char* data){
   // SUCCESS FUNCTION BODY
 }, [](const char* event, const char* data){
   // ERROR FUNCTION BODY
-}); // in-line(lambda) example
+});
 ```
 NOTE: must be called on a Promise (PROM) object either through method/dot chaining or by storing the object reference (see [.create()]) as a variable and calling on that. Returns reference to same Promise (PROM) object
 
 ##### Error (PROM)
 ------
-Specifies the function to call if/when the API returns with an error (such as 404).  Error functions must return void and accept 2x const char* arguments (same as [Particle.subscribe])
+Specifies the function to call if/when the API returns with an error (such as 404).  Error functions must return void and accept 2x `const char*` arguments (same as [Particle.subscribe])
 ``` cpp
 // SYNTAX (Arguments in brackets "{}" are optional)
 Prom& error(std::function errorFunc);
@@ -167,9 +170,11 @@ Prom& error(void (T::*errorFunc)(const char*, const char*), T *instance);
 // EXAMPLE USAGE
 ___.error(onErrorFunction);
 ___.error(&MyClass::onErrorFunc, &MyObject); // or this instead of &MyObject
+
+// in-line(lambda) example
 ___.error([][](const char* event, const char* data){
   // ERROR FUNCTION BODY
-}); // in-line(lambda) example
+});
 ```
 NOTE: must be called on a Promise (PROM) object either through method/dot chaining or by storing the object reference (see [.create()]) as a variable and calling on that. Returns reference to same Promise (PROM) object
 
@@ -186,9 +191,11 @@ Prom& timeout(void (T::*timeoutFunc)(void), T *instance, {unsigned int timeout})
 ___.timeout(onTimeoutFunction); // Add a timeout function to a Promise
 ___.timeout(onTimeoutFunction, 10000); // Add a timeout function to a Promise and use custom timeout time of 10 sec (ovverrides and resets a timeout time if given in .create())
 ___.timeout(&MyClass::onTimeoutFunc, &MyObject, {10000}); // Add a timeout member function from a class with optional custom timeout , can use "this" instead of &MyObject
+
+// in-line(lambda) example with optional custom timeout
 ___.timeout([]{
   // TIMEOUT FUNCTION BODY
-}, {10000}); // in-line(lambda) example with optional custom timeout
+}, {10000});
 ```
 NOTE: must be called on a Promise (PROM) object either through method/dot chaining or by storing the object reference (see [.create()]) as a variable and calling on that. Returns reference to same Promise (PROM) object
 
@@ -204,9 +211,11 @@ Prom& finally(void (T::*finalFunc)(void), T *instance);
 // EXAMPLE USAGE
 ___.finally(finalFunction); // Add a final function to be called no matter the Promise resolution mode
 ___.finally(&MyClass::finalFunc, &MyObject); // Add a final funciton from a class, can use "this" instead of &MyObject
+
+// in-line(lambda) example
 ___.finally([]{
   // FINAL FUNCTION BODY
-}); // in-line(lambda) example
+});
 ```
 NOTE: must be called on a Promise (PROM) object either through method/dot chaining or by storing the object reference (see [.create()]) as a variable and calling on that. Returns reference to same Promise (PROM) object
 
@@ -233,20 +242,18 @@ NOTE: must be called on a Promise (PROM) object either through method/dot chaini
 ##### Is Valid (PROM)
 ------
 Returns true if the Promise it is called on is valid.
-In order to avoid run-time issues, a dummy, in-valid Promise is returned if a user attempts to create a new Promise when there is no available slots in the PromiseContainer. This way an unknowing user, can still call `.then()`, `.error()`, etc. on the dummy Promise without crashing the application.
+In order to avoid run-time issues, a dummy, in-valid Promise is returned if a user attempts to create a new Promise when there are no available slots in the PromiseContainer. This way an unknowing user, can still call `.then()`, `.error()`, etc. on the dummy Promise without crashing the application.
 The dummy Promise will never resolve and will never call the success, error, timeout or final functions.
 ``` cpp
 // SYNTAX (Arguments in brackets "{}" are optional)
 bool isValid();
 
 // EXAMPLE USAGE
+// Create a Promise and store reference in variable "p"
 auto& p = promise.create(myWebhookCaller, "MyResponseTopic");
 bool GoodPromise = p.isValid(); // Returns true if the Promise that was created is valid. An invalid Promise will not be evaluated
 ```
 NOTE: must be called on a Promise (PROM) object either through method/dot chaining or by storing the object reference (see [.create()]) as a variable and calling on that.
-
-## Contributing
-
 
 ## LICENSE
 Copyright 2018 Ben Veenema
@@ -254,4 +261,4 @@ Copyright 2018 Ben Veenema
 Licensed under the <insert your choice of license here> license
 
 [.create()]:(#create)
-[Particle.subscribe]:(https://docs.particle.io/reference/firmware/photon/#particle-subscribe-)
+[Particle.subscribe]: https://docs.particle.io/reference/firmware/photon/#particle-subscribe-
