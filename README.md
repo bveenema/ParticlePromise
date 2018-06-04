@@ -105,18 +105,18 @@ The examples make use an open API called [JSONplaceholder](https://jsonplacehold
 ![Webhook](readmeAssets/NewWebhook.JPG)
 
 2. Give your webhook the following:
-     Event Name: TestParticlePromise
-     URL: https://jsonplaceholder.typicode.com/{{param}}
-     Request Type: GET
-     Request Format: Query Parameters
-     Device: Any
+   * Event Name: TestParticlePromise
+   * URL: https://jsonplaceholder.typicode.com/{{param}}
+   * Request Type: GET
+   * Request Format: Query Parameters
+   * Device: Any
    ![Webhook Basic Parameters](readmeAssets/WebhookBasicParameters.JPG)
 
 3. Click on "Advanced Settings", skip everything and scroll down to "Webhook Responses". Give your webhook the following settings:
-     Response Topic: {{{PARTICLE_DEVICE_ID}}}/promise-response/success/test
-     Error Response Topic: {{{PARTICLE_DEVICE_ID}}}/promise-response/error/test
-     Response Template: {{title}}
-   ![Webhook Responses](WebhookResponses.JPG)
+   * Response Topic: {{{PARTICLE_DEVICE_ID}}}/promise-response/success/test
+   * Error Response Topic: {{{PARTICLE_DEVICE_ID}}}/promise-response/error/test
+   * Response Template: {{title}}
+   ![Webhook Responses](readmeAssets/WebhookResponses.JPG)
 
 4. Click on "Save" at the bottom and you'll be taken to the "View Integration" page.  You can TEST your webhook here to make sure it's working properly.
 
