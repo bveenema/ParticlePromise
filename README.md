@@ -87,27 +87,39 @@ ParticlePromise promise(5,60); // 5 Promises, 60 char Response Topic - ~968 byte
 
 ##### Enable
 ------
-Enable must be called prior to [.create()]
+Enable must be called prior to [.create()]. Sets up the API response handler.  Uses 1 of 4 Particle.subscribe() slots available to user code
 ``` cpp
 promise.enable();
 ```
-[.create()](#create)
 ##### Set Timeout
 ------
+Sets a new default timeout that will be used for all subsequent Promises (does not effect current, in-process) Promises.  Default is 5 seconds.
 ``` cpp
 promise.setTimeout(10000); // Update default timeout to 10 seconds (unit: milliseconds)
 ```
 
 ##### Process
 ------
+Checks all in-process Promises for timeout expiration.  Should be called every loop (or more frequently);
 ``` cpp
 promise.process();
 ```
 
 ##### Create
 ------
+Creates a new Promise. Must be passed a function that calls the API/Webhook (ie `Particle.publish()`) and a Response Topic.
+
+The function that calls the API/Webhook (sendWebhookFunc) must return void and accept no arguments in addition to calling `Particle.publish()`
+
+Can additionally be passed a timeout parameter that specifies a custom timeout for the individual Promise
+
 ``` cpp
-promise.create(myWebhookCaller, "MyResponseTopic"); // Create a Promise named "MyResponseTopic" that calls myWebhookCaller with default timeout
+// SYNTAX (Arguments in brackets "{}" are optional)
+Prom& create(std::function sendWebhookFunc, const char * responseTopic, {unsigned int timeout});
+Prom& create(void (T::*sendWebhookFunc)(void), T *instance, const char* responseTopic, {unsigned int timeout})
+
+// EXAMPLE USAGE
+promise.create(myWebhookCaller, const char* "MyResponseTopic"); // Create a Promise named "MyResponseTopic" that calls myWebhookCaller with default timeout
 promise.create(myWebhookCaller, "MyResponseTopic", 10000); // Create Promise named "MyResponseTopic" that calls myWebhookCaller with 10 sec timeout
 auto& p = promise.create(myWebhookCaller, "MyResponseTopic"); // Create Promise as above and store reference to Promise object in variable named "p"
 promise.create([]{
@@ -120,11 +132,19 @@ NOTE: Returns a reference to a Promise (PROM) object that can either be ignored 
 
 ##### Then (PROM)
 ------
+Specifies the function to call on successful response from the API.  Can additionally be passed an error function to be called on-error.
+
+Both success and error functions must return void and accept 2x const char* arguments (same as [Particle.subscribe] handler)
 ``` cpp
+// SYNTAX (Arguments in brackets "{}" are optional)
+Prom& then(std::function successFunc, {std::function errorFunc});
+Prom& then(void (T::*successFunc)(const char*, const char*), {void (T::*errorFunc)(const char*, const char*)}, T *instance);
+
+// EXAMPLE USAGE
 ___.then(onSuccessFunction);
 ___.then(onSuccessFunction, onErrorFunction);
 ___.then(&MyClass::onSuccessFunc, &MyObject);// or this instead of &MyObject
-___.then(&MyClass::onSuccessFunc, &MyObject, &MyOtherClass::onErrorFunc, &MyOtherObject);// or this instead of &MyObject
+___.then(&MyClass::onSuccessFunc, &MyClass::onErrorFunc, &MyObject);// or this instead of &MyObject
 ___.then([](const char* event, const char* data){
   //SUCCESS FUNCTION BODY
 }); // in-line(lambda) example
@@ -138,18 +158,31 @@ NOTE: must be called on a Promise (PROM) object either through method/dot chaini
 
 ##### Error (PROM)
 ------
+Specifies the function to call if/when the API returns with an error (such as 404).  Error functions must return void and accept 2x const char* arguments (same as [Particle.subscribe])
 ``` cpp
+// SYNTAX (Arguments in brackets "{}" are optional)
+Prom& error(std::function errorFunc);
+Prom& error(void (T::*errorFunc)(const char*, const char*), T *instance);
+
+// EXAMPLE USAGE
 ___.error(onErrorFunction);
 ___.error(&MyClass::onErrorFunc, &MyObject); // or this instead of &MyObject
 ___.error([][](const char* event, const char* data){
   // ERROR FUNCTION BODY
 }); // in-line(lambda) example
 ```
-NOTE: must be called on a Promise (PROM) object either through method/dot chaining or by storing the object reference (see .create()) as a variable and calling on that. Returns reference to same Promise (PROM) object
+NOTE: must be called on a Promise (PROM) object either through method/dot chaining or by storing the object reference (see [.create()]) as a variable and calling on that. Returns reference to same Promise (PROM) object
 
 ##### Timeout (PROM)
 ------
+Specifies the function to call if/when the API does not respond (times out).  Timeout functions must return void and accept no arguments.
+Can optionally be supplied a timeout parameter which sets a custom timeout for the individual Promise.  If a timeout parameter is supplied, the timeout timer is reset when `.timeout()` is called and if a value was supplied in [.create()] it will be overridden.
 ``` cpp
+// SYNTAX (Arguments in brackets "{}" are optional)
+Prom& timeout(std::function timeoutFunc, {unsigned int timeout});
+Prom& timeout(void (T::*timeoutFunc)(void), T *instance, {unsigned int timeout})
+
+// EXAMPLE USAGE
 ___.timeout(onTimeoutFunction); // Add a timeout function to a Promise
 ___.timeout(onTimeoutFunction, 10000); // Add a timeout function to a Promise and use custom timeout time of 10 sec (ovverrides and resets a timeout time if given in .create())
 ___.timeout(&MyClass::onTimeoutFunc, &MyObject, {10000}); // Add a timeout member function from a class with optional custom timeout , can use "this" instead of &MyObject
@@ -157,41 +190,60 @@ ___.timeout([]{
   // TIMEOUT FUNCTION BODY
 }, {10000}); // in-line(lambda) example with optional custom timeout
 ```
-NOTE: must be called on a Promise (PROM) object either through method/dot chaining or by storing the object reference (see .create()) as a variable and calling on that. Returns reference to same Promise (PROM) object
+NOTE: must be called on a Promise (PROM) object either through method/dot chaining or by storing the object reference (see [.create()]) as a variable and calling on that. Returns reference to same Promise (PROM) object
 
 ##### Finally (PROM)
 ------
+Specifies the function to be called after the Promise resolves, no matter what the outcome.  Final functions must return void and accept no arguments. Final functions will always be called after success, error or timeout functions.
+Final functions are often used for signaling the completion of the Promise to the rest of the application.
 ``` cpp
+// SYNTAX (Arguments in brackets "{}" are optional)
+Prom& finally(std::function finalFunc);
+Prom& finally(void (T::*finalFunc)(void), T *instance);
+
+// EXAMPLE USAGE
 ___.finally(finalFunction); // Add a final function to be called no matter the Promise resolution mode
 ___.finally(&MyClass::finalFunc, &MyObject); // Add a final funciton from a class, can use "this" instead of &MyObject
 ___.finally([]{
   // FINAL FUNCTION BODY
 }); // in-line(lambda) example
 ```
-NOTE: must be called on a Promise (PROM) object either through method/dot chaining or by storing the object reference (see .create()) as a variable and calling on that. Returns reference to same Promise (PROM) object
+NOTE: must be called on a Promise (PROM) object either through method/dot chaining or by storing the object reference (see [.create()]) as a variable and calling on that. Returns reference to same Promise (PROM) object
 
 ##### Get Status (PROM)
 ------
+Return the status of the Promise.  Returns true if the Promise is in process. Returns false if the Promise is resolved.
 ``` cpp
+// SYNTAX (Arguments in brackets "{}" are optional)
+bool getStatus();
+
+// EXAMPLE USAGE
 // Create a Promise and store reference in variable "p"
 auto& p = promise.create(myWebhookCaller, "MyResponseTopic");
 bool PromiseStatus = p.getStatus(); // Returns true if Promise has not resolved
 
-// getStatus() is useful for specific functions or alternative loops while waitng for a Promise to resolve EX.
+// getStatus() is useful for specific functions or alternative loops while waiting for a Promise to resolve EX.
 while(p.getStatus()){
   alternateFunction();
   // NOTE: be sure to call Particle.process(); and promise.process() in the while loop
 }
 ```
-NOTE: must be called on a Promise (PROM) object either through method/dot chaining or by storing the object reference (see .create()) as a variable and calling on that.
+NOTE: must be called on a Promise (PROM) object either through method/dot chaining or by storing the object reference (see [.create()]) as a variable and calling on that.
 
 ##### Is Valid (PROM)
 ------
+Returns true if the Promise it is called on is valid.
+In order to avoid run-time issues, a dummy, in-valid Promise is returned if a user attempts to create a new Promise when there is no available slots in the PromiseContainer. This way an unknowing user, can still call `.then()`, `.error()`, etc. on the dummy Promise without crashing the application.
+The dummy Promise will never resolve and will never call the success, error, timeout or final functions.
 ``` cpp
+// SYNTAX (Arguments in brackets "{}" are optional)
+bool isValid();
+
+// EXAMPLE USAGE
 auto& p = promise.create(myWebhookCaller, "MyResponseTopic");
 bool GoodPromise = p.isValid(); // Returns true if the Promise that was created is valid. An invalid Promise will not be evaluated
 ```
-NOTE: must be called on a Promise (PROM) object either through method/dot chaining or by storing the object reference (see .create()) as a variable and calling on that.
+NOTE: must be called on a Promise (PROM) object either through method/dot chaining or by storing the object reference (see [.create()]) as a variable and calling on that.
 
 ## Contributing
 
@@ -200,3 +252,6 @@ NOTE: must be called on a Promise (PROM) object either through method/dot chaini
 Copyright 2018 Ben Veenema
 
 Licensed under the <insert your choice of license here> license
+
+[.create()]:(#create)
+[Particle.subscribe]:(https://docs.particle.io/reference/firmware/photon/#particle-subscribe-)
