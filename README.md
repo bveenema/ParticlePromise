@@ -87,10 +87,11 @@ ParticlePromise promise(5,60); // 5 Promises, 60 char Response Topic - ~968 byte
 
 ##### Enable
 ------
+Enable must be called prior to [.create()]
 ``` cpp
 promise.enable();
 ```
-
+[.create()](#create)
 ##### Set Timeout
 ------
 ``` cpp
@@ -109,10 +110,10 @@ promise.process();
 promise.create(myWebhookCaller, "MyResponseTopic"); // Create a Promise named "MyResponseTopic" that calls myWebhookCaller with default timeout
 promise.create(myWebhookCaller, "MyResponseTopic", 10000); // Create Promise named "MyResponseTopic" that calls myWebhookCaller with 10 sec timeout
 auto& p = promise.create(myWebhookCaller, "MyResponseTopic"); // Create Promise as above and store reference to Promise object in variable named "p"
-promise.create([]{ // Inline (lambda) example
+promise.create([]{
   // FUNCTION BODY that must call
   Particle.publish();
-},"MyResponseTopic");
+},"MyResponseTopic"); // in-line(lambda) example
 ```
 
 NOTE: Returns a reference to a Promise (PROM) object that can either be ignored (most cases) or stored in a variable.  It's recommended to use `auto` for creating the variable to keep code easiest to read.
@@ -126,14 +127,14 @@ ___.then(&MyClass::onSuccessFunc, &MyObject);// or this instead of &MyObject
 ___.then(&MyClass::onSuccessFunc, &MyObject, &MyOtherClass::onErrorFunc, &MyOtherObject);// or this instead of &MyObject
 ___.then([](const char* event, const char* data){
   //SUCCESS FUNCTION BODY
-});
+}); // in-line(lambda) example
 ___.then([](const char* event, const char* data){
   // SUCCESS FUNCTION BODY
 }, [](const char* event, const char* data){
   // ERROR FUNCTION BODY
-});
+}); // in-line(lambda) example
 ```
-NOTE: must be called on a Promise (PROM) object either through method/dot chaining or by storing the object reference (see .create()) as a variable and calling on that. Returns reference to same Promise (PROM) object
+NOTE: must be called on a Promise (PROM) object either through method/dot chaining or by storing the object reference (see [.create()]) as a variable and calling on that. Returns reference to same Promise (PROM) object
 
 ##### Error (PROM)
 ------
@@ -142,7 +143,7 @@ ___.error(onErrorFunction);
 ___.error(&MyClass::onErrorFunc, &MyObject); // or this instead of &MyObject
 ___.error([][](const char* event, const char* data){
   // ERROR FUNCTION BODY
-});
+}); // in-line(lambda) example
 ```
 NOTE: must be called on a Promise (PROM) object either through method/dot chaining or by storing the object reference (see .create()) as a variable and calling on that. Returns reference to same Promise (PROM) object
 
