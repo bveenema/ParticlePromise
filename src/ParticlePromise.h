@@ -5,6 +5,8 @@
 
 
 /* ParticlePromise library by Ben Veenema
+ *  Creates Javascript-like promises for webhook/API callbacks on the Particle
+ *  ecosystem.
  */
 
 
@@ -16,7 +18,7 @@
 class ParticlePromise{
 public:
   /**
-   * Constructor: Initializs the PromiseContainer. Optionally set containerSize and maxTopicLength
+   * Constructor: Initializes the PromiseContainer. Optionally set containerSize and maxTopicLength
    */
   ParticlePromise(int _containerSize = 5, int _maxTopicLength = 20);
 
@@ -26,7 +28,7 @@ public:
   void setTimeout(uint32_t newTimeout);
 
   /**
-   * enable: enable/re-enable the Particle.subscribe call
+   * enable: enable/re-enable the Particle.subscribe call, must be called prior to .create()
    */
   void enable(void);
 
