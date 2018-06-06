@@ -45,7 +45,7 @@ public:
    */
   Prom& create(std::function<void(void)> sendWebhookFunc, const char* responseTopic, unsigned int timeout = 0){
     // return invalid promise if not subscribed
-    if(!isSubcribed) return PromiseContainer[containerSize];
+    if(!isSubscribed) return PromiseContainer[containerSize];
 
     unsigned int containerPosition = this->findEmptySlot();
 
@@ -61,7 +61,7 @@ public:
   template <typename T>
   Prom& create(void (T::*sendWebhookFunc)(void), T *instance, const char* responseTopic, unsigned int timeout = 0){
     // return invalid promise if not subscribed
-    if(!isSubcribed) return PromiseContainer[containerSize];
+    if(!isSubscribed) return PromiseContainer[containerSize];
 
     unsigned int containerPosition = this->findEmptySlot();
 
