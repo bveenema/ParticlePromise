@@ -141,8 +141,12 @@ ParticlePromise promise(5,60); // 5 Promises, 60 char Response Topic - ~968 byte
 
 ##### Enable
 ------
-Enable must be called prior to [.create()]. Enable sets up the API response handler and uses 1 of 4 Particle.subscribe() slots available to user code.
+Enable must be called prior to [.create()]. Enable sets up the API response handler and uses 1 of 4 Particle.subscribe() slots available to user code. Returns true if successfully subscribed
 ``` cpp
+// SYNTAX (Arguments in brackets "{}" are optional)
+bool enable()
+
+// EXAMPLE
 promise.enable();
 ```
 ##### Set Timeout
@@ -166,6 +170,8 @@ Creates a new Promise. Must be passed a function that calls the API/Webhook (ie 
 The function that calls the API/Webhook (sendWebhookFunc) must return void and accept no arguments in addition to calling `Particle.publish()`
 
 Can optionally be passed a timeout parameter that specifies a custom timeout for the individual Promise
+
+Returns a reference to the new Promise object. Returns a reference to a dummy/invalid Promise object if there is no more room in the PromiseContainer or if the Subscriber has not been setup by successful call of [.enable()](#enable)
 
 ``` cpp
 // SYNTAX (Arguments in brackets "{}" are optional)

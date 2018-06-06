@@ -30,7 +30,7 @@ public:
   /**
    * enable: enable/re-enable the Particle.subscribe call, must be called prior to .create()
    */
-  void enable(void);
+  bool enable(void);
 
   /**
    * cancel: Stop the specified Promise from resolving, must provide the exact response topic
@@ -44,7 +44,11 @@ public:
    *          promise object
    */
   Prom& create(std::function<void(void)> sendWebhookFunc, const char* responseTopic, unsigned int timeout = 0){
+    // return invalid promise if not subscribed
+    if(!isSubcribed) return PromiseContainer[containerSize];
+
     unsigned int containerPosition = this->findEmptySlot();
+
     // return invalid promise (ie PromiseContainer[].valid == false)
     if(containerPosition >= containerSize) return PromiseContainer[containerSize];
 
@@ -56,7 +60,11 @@ public:
 
   template <typename T>
   Prom& create(void (T::*sendWebhookFunc)(void), T *instance, const char* responseTopic, unsigned int timeout = 0){
+    // return invalid promise if not subscribed
+    if(!isSubcribed) return PromiseContainer[containerSize];
+
     unsigned int containerPosition = this->findEmptySlot();
+
     // return invalid promise (ie PromiseContainer[].valid == false)
     if(containerPosition >= containerSize) return PromiseContainer[containerSize];
 
@@ -89,6 +97,7 @@ public:
   // }
 
 private:
+  bool isSubscribed = false;
   unsigned int maxTopicLength;
   unsigned int containerSize;
   std::vector<Prom> PromiseContainer;

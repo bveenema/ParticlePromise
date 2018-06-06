@@ -42,8 +42,13 @@ unsigned int ParticlePromise::findEmptySlot(void){
   return containerPosition;
 }
 
-void ParticlePromise::enable(void){
-  Particle.subscribe(System.deviceID() + "/promise-response", &ParticlePromise::responseHandler, this, MY_DEVICES);
+bool ParticlePromise::enable(void){
+  bool LOCAL_isSubcribed = isSubcribed;
+  if(!isSubscribed){
+    LOCAL_isSubcribed = Particle.subscribe(System.deviceID() + "/promise-response", &ParticlePromise::responseHandler, this, MY_DEVICES);
+    isSubcribed = LOCAL_isSubscribed;
+  }
+  return LOCAL_isSubcribed;
 }
 
 void ParticlePromise::process(void){

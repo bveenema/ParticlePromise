@@ -1,4 +1,7 @@
-Add .cancel() method
 Update lambda example for in class situation
-Add .isEnabled() method
+
+Check if Subscribe is enabled before creating new (bool isSubscribed)
+  Add bool return from enable() - true if Subscribe returns true DONE
+  Always return dummy Promise if isSubscribed = false DONE
+
 enforce unique response topics (have to look into overhead)
