@@ -1,0 +1,4 @@
+Add .cancel() method
+Update lambda example for in class situation
+Add .isEnabled() method
+enforce unique response topics (have to look into overhead)
