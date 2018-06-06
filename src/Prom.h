@@ -84,6 +84,10 @@ public:
     return this->valid;
   };
 
+  void cancel(){
+    this->pending = false;
+  }
+
 
 private:
 

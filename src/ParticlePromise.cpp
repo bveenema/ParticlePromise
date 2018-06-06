@@ -71,9 +71,13 @@ void ParticlePromise::responseHandler(const char *event, const char *data) {
 }
 
 int ParticlePromise::findPromiseByTopic(const char* event){
-  int containerPosition = 0;
-  for(containerPosition; containerPosition<containerSize; containerPosition++){
+  for(int containerPosition = 0; containerPosition<containerSize; containerPosition++){
     if(strstr(event, PromiseContainer[containerPosition].responseTopic)) return containerPosition;
   }
   return -1;
+}
+
+void ParticlePromise::cancel(const char* responseTopic){
+  int promiseID = findPromiseByTopic(responseTopic);
+  if(promiseID >= 0) PromiseContainer[promiseID].pending = false;
 }

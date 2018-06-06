@@ -33,6 +33,11 @@ public:
   void enable(void);
 
   /**
+   * cancel: Stop the specified Promise from resolving, must provide the exact response topic
+   */
+  void cancel(const char* responseTopic);
+
+  /**
    * create: Start a new promise by supplying a function to send the webhook and
    *          a response topic.  Optionally supply a timeout.  If no timeout is
    *          supplied, the default will be used.  Returns a reference to the

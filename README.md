@@ -37,6 +37,7 @@ This syntax of this library may be strange to many users.  There are many, full 
    * [finally()](#finally-prom)
    * [getStatus()](#get-status-prom)
    * [isValid()](#is-valid-prom)
+   * [cancel()](#cancel)
 4. [License](#license)
 
 ## Usage
@@ -307,6 +308,32 @@ auto& p = promise.create(myWebhookCaller, "MyResponseTopic");
 bool GoodPromise = p.isValid(); // Returns true if the Promise that was created is valid. An invalid Promise will not be evaluated
 ```
 NOTE: must be called on a Promise (PROM) object either through method/dot chaining or by storing the object reference (see [.create()]) as a variable and calling on that.
+
+##### Cancel
+------
+Cancels the referenced Promise by setting pending = false.
+There are 2 versions, "Lookup" and "Call on Promise Object". Lookup method must be passed the response topic. Call on Object method must be called on the individual Promise object.
+``` cpp
+// SYNTAX (Arguments in brackets "{}" are optional)
+void cancel();
+
+// EXAMPLE USAGE
+// Lookup Method
+promise.create(sendRequest, "test")
+       .then(successFunc);
+promise.cancel("test");
+
+// Call on Promise Object method
+auto& p = promise.create(sendRequest, "test")
+                 .then(successFunc);
+p.cancel();
+```
+NOTE: Second method must be called on a Promise (PROM) object either through method/dot chaining or by storing the object reference (see [.create()]) as a variable and calling on that.
+
+## CHANGELOG
+
+* v0.0.1 - Initial Release
+* v0.0.2 - Add .cancel()
 
 ## LICENSE
 Copyright 2018 Ben Veenema
