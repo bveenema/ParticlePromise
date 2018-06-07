@@ -16,6 +16,7 @@ void setup() {
   // test that API is working
   auto& p1 = promise.create(sendRequest, "test")
                    .then(successFunc);
+
   while(p1.getStatus()){
     Particle.process();
     promise.process();

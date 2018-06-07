@@ -47,6 +47,12 @@ public:
     // return invalid promise if not subscribed
     if(!isSubscribed) return PromiseContainer[containerSize];
 
+    // return invalid promise if duplicate
+    if(findPromiseByTopic(responseTopic) >= 0){
+      Serial.printlnf("Duplicate Response Topic: %s", responseTopic);
+      return PromiseContainer[containerSize];
+    }
+
     unsigned int containerPosition = this->findEmptySlot();
 
     // return invalid promise (ie PromiseContainer[].valid == false)
@@ -104,7 +110,8 @@ private:
   unsigned int defaultTimeout = 5000;
 
   void responseHandler(const char *event, const char *data);
-  int findPromiseByTopic(const char* event);
+  int findPromiseByTopic(const char*);
+  int findPromiseByEvent(const char*);
   unsigned int findEmptySlot(void);
   void setTimeoutTime(unsigned int containerPosition, unsigned int timeout);
   void resetSlot(unsigned int containerPosition, const char* responseTopic = "null", bool pending = false);

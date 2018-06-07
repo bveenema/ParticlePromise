@@ -38,7 +38,8 @@ This syntax of this library may be strange to many users.  There are many, full 
    * [getStatus()](#get-status-prom)
    * [isValid()](#is-valid-prom)
    * [cancel()](#cancel)
-4. [License](#license)
+4. [Changelog](#changelog)
+5. [License](#license)
 
 ## Usage
 
@@ -339,7 +340,7 @@ NOTE: Second method must be called on a Promise (PROM) object either through met
 ## CHANGELOG
 
 * v0.0.1 - Initial Release
-* v0.0.2 - Add .cancel()
+* v0.0.2 - Add .cancel(), Add isSubscribed checking, Add duplicate response topic checking
 
 ## LICENSE
 Copyright 2018 Ben Veenema

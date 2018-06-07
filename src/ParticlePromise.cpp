@@ -63,8 +63,8 @@ void ParticlePromise::process(void){
 }
 
 void ParticlePromise::responseHandler(const char *event, const char *data) {
-  int promiseID = findPromiseByTopic(event);
-  if(promiseID >= 0 && PromiseContainer[promiseID].pending){
+  int promiseID = findPromiseByEvent(event);
+  if(promiseID >= 0){
     if(strstr(event, "success")){
       PromiseContainer[promiseID].successFunc(event, data);
     } else if(strstr(event, "error")){
@@ -75,9 +75,22 @@ void ParticlePromise::responseHandler(const char *event, const char *data) {
   }
 }
 
-int ParticlePromise::findPromiseByTopic(const char* event){
-  for(int containerPosition = 0; containerPosition<containerSize; containerPosition++){
-    if(strstr(event, PromiseContainer[containerPosition].responseTopic)) return containerPosition;
+int ParticlePromise::findPromiseByTopic(const char* searchString){
+  for(int i=0; i<containerSize; i++){
+    if(PromiseContainer[i].pending &&
+       strstr(PromiseContainer[i].responseTopic, searchString)){
+         return i;
+       }
+  }
+  return -1;
+}
+
+int ParticlePromise::findPromiseByEvent(const char* searchString){
+  for(int i=0; i<containerSize; i++){
+    if(PromiseContainer[i].pending &&
+       strstr(searchString, PromiseContainer[i].responseTopic)){
+         return i;
+       }
   }
   return -1;
 }

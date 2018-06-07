@@ -47,12 +47,15 @@ void setup() {
   //    .then(), .error() etc. member functions on a null pointer
   //    EXAMPLE:
   int promiseCount = 2;
-  auto& p3 = promise.create(sendRequest, "test");
+  char buffer[8];
+  sprintf(buffer, "test%u",promiseCount);
+  auto& p3 = promise.create(sendRequest, buffer);
   ++promiseCount;
-  while(p3.isValid()){ // check is p2 points to a valid Promise object
-    p3 = promise.create(sendRequest, "test"); // keep creating promises until
+  while(p3.isValid()){ // check if p3 points to a valid Promise object
+    sprintf(buffer, "test%u", promiseCount++);
+    p3 = promise.create(sendRequest, buffer); // keep creating promises until
       //print the promise
-      Serial.printf("Promise %u is ", ++promiseCount);
+      Serial.printf("Promise %u is ", promiseCount);
       if(p3.isValid()) Serial.println("valid");
       else Serial.println("invalid");
   }
