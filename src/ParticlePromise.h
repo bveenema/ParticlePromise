@@ -48,10 +48,7 @@ public:
     if(!isSubscribed) return PromiseContainer[containerSize];
 
     // return invalid promise if duplicate
-    if(findPromiseByTopic(responseTopic) >= 0){
-      Serial.printlnf("Duplicate Response Topic: %s", responseTopic);
-      return PromiseContainer[containerSize];
-    }
+    if(findPromiseByTopic(responseTopic) >= 0) return PromiseContainer[containerSize];
 
     unsigned int containerPosition = this->findEmptySlot();
 
